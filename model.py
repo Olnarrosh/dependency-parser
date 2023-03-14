@@ -14,7 +14,7 @@ class Model:
                 for d in range(1, len(s)):
                     if h != d:
                         self._train_(s, h, d)
-        self.ratio = len(self.weights_neg) / len(self.weights_pos)
+        self.ratio = sum(sum(w.values()) for w in self.weights_neg.values()) / sum(sum(w.values()) for w in self.weights_pos.values())
         
     def _train_(self, s: Sentence, h: int, d: int) -> None:
         for f in s.features[(h, d)]:
