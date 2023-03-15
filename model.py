@@ -8,20 +8,20 @@ class Model:
         self.weights_neg = {}
         self.ratio = 1
 
-    def train(self, corpus: list[Sentence]) -> None:
+    def train(self, corpus: list[Sentence], feature_weights: list[float]) -> None:
         for s in corpus:
             for h in range(len(s)):
                 for d in range(1, len(s)):
                     if h != d:
-                        self._train_(s, h, d)
+                        self._train_(s, h, d, feature_weights)
         self.ratio = sum(sum(w.values()) for w in self.weights_neg.values()) / sum(sum(w.values()) for w in self.weights_pos.values())
         
-    def _train_(self, s: Sentence, h: int, d: int) -> None:
+    def _train_(self, s: Sentence, h: int, d: int, fw: list[float]) -> None:
         for f in s.features[(h, d)]:
             weights = self.weights_pos if s[d].head == h else self.weights_neg
             if not f in weights:
                 weights[f] = {}
-            weights[f][s[d].relation] = weights[f].get(s[d].relation, 0) + 1
+            weights[f][s[d].relation] = weights[f].get(s[d].relation, 0) + fw[f]
 
     def predict(self, s: Sentence) -> Sentence:
         prediction = Sentence(s)
